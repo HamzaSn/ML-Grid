@@ -1,2 +1,6 @@
 # ML-Grid
-![]("./Presentation/GIF1.gif")
+
+
+First we 
+
+![]('/Presentation/GIF1.gif')
