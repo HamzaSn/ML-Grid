@@ -3,4 +3,4 @@
 
 First we 
 
-![]('Presentation/GIF1.gif')
+![]('GIF1.gif')
