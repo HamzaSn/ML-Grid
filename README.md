@@ -13,7 +13,7 @@ L'utilisateur doit fournir le chemain d'un fichier csv contenant la dataset de s
 L'utilisateur peut aussi choisir les variables qui seront utiliser pour les modèles ML.  
 En cas de non selection de variables indépendants (Features) le programme néglige les variable dont le nom contient "nom","id" ou "date" parcequ'ils sont généralement uniques et n'ont pas d'effet sur la variance de l'output (Variable dépendante).  
 
-Pour la démenstration on va choisir le training set de Kaggle/Titanic :
+Pour la démonstration on va choisir le training set de Kaggle/Titanic :
 
 ![](./media/GIF1.gif)
 
