@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.Light.Distant?>
+<?import javafx.scene.effect.Lighting?>
+<?import javafx.scene.effect.Shadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="App.Controllers.HomeController">
+  <children>
+    <AnchorPane focusTraversable="true" maxHeight="-1.0" maxWidth="-1.0" prefHeight="398.0" prefWidth="685.0" VBox.vgrow="ALWAYS">
+      <children>
+            <ImageView fx:id="newAnalysis" fitHeight="819.0" fitWidth="1286.0" layoutX="-420.0" layoutY="-47.0" onMouseClicked="#newAnalysis" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../color2.jpg" />
+               </image>
+            </ImageView>
+            <Label fx:id="newButton" alignment="CENTER" layoutX="155.0" layoutY="262.0" onMouseClicked="#newAnalysis" style = "-fx-cursor: hand" prefHeight="34.0" prefWidth="154.0" text="New analysis" textFill="#1b1302">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font></Label>
+            <Label fx:id="analysisHistory" alignment="CENTER" layoutX="152.0" layoutY="317.0" prefHeight="34.0" prefWidth="154.0" text="Analysis history">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font></Label>
+            <Label alignment="CENTER" layoutX="236.0" layoutY="85.0" prefHeight="93.0" prefWidth="368.0" text="Get started">
+               <font>
+                  <Font size="36.0" />
+               </font>
+               <textFill>
+                  <LinearGradient endY="0.6857142857142857" startX="0.7476190476190476">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color red="1.0" green="1.0" blue="1.0" />
+                           </color>
+                        </Stop>
+                        <Stop offset="0.007407407407407408">
+                           <color>
+                              <Color red="1.0" green="1.0" blue="1.0" />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color red="0.8947368264198303" green="0.7543818950653076" blue="0.4515107274055481" />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </LinearGradient>
+               </textFill>
+            </Label>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="3.0" layoutX="128.0" layoutY="293.0" strokeType="INSIDE" width="171.0">
+               <stroke>
+                  <LinearGradient endX="0.4190476190476191" endY="0.42380952380952386" startX="0.5476190476190477" startY="0.40476190476190477">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color green="0.6846153736114502" blue="0.8899999856948853" />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color red="0.8899999856948853" green="0.6380615234375" blue="0.07119999825954437" />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </LinearGradient>
+               </stroke></Rectangle>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="3.0" layoutX="157.0" layoutY="349.0" strokeType="INSIDE" width="196.0">
+               <stroke>
+                  <LinearGradient endX="0.6476190476190476" endY="0.42380952380952386" startX="0.5476190476190477" startY="0.40476190476190477">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color green="0.6846153736114502" blue="0.8899999856948853" />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color red="0.8899999856948853" green="0.6380615234375" blue="0.07119999825954437" />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </LinearGradient>
+               </stroke>
+            </Rectangle>
+      </children>
+         <effect>
+            <Lighting>
+               <bumpInput>
+                  <Shadow />
+               </bumpInput>
+               <light>
+                  <Light.Distant />
+               </light>
+            </Lighting>
+         </effect>
+    </AnchorPane>
+  </children>
+</VBox>
