@@ -1,8 +1,9 @@
-## Optimizer : Overview
+## Overview
 
 ## L'hyperparameter tuning, c'est quoi ?
 Les hyperparamètres correspondent aux paramètres d’ajustement des algorithmes d’apprentissage automatisé ou de machine learning. C’est au concepteur de l’algorithme de les configurer (souvent le data scientist). Un algorithme d’apprentissage automatique ne peut en effet fonctionner sans ces hyperparamètres. Leur réglage (tuning) nécessite un travail statistique afin de déterminer ceux qui donneront le meilleur résultat.
 
+## Optimizer 
 
 Optimizer est une application-desktop qui aide les data-scientists a choisir entre les differents modèles (Model selection)  
 Le but principale de l'application est de lancer une recherche (Grid Search) d'optimization des differents parametres avec aucun effort de la part de l'utilisateur de l'application.
