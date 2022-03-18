@@ -1,7 +1,7 @@
 ---
 params:
-  data_path: "/home/hs/Desktop/ML/mljibber/Titanic/train.csv"
-  target_var: "Survived"
+  data_path: ""
+  target_var: ""
   chosen_vars: ""
   output_path: ""
   
@@ -11,7 +11,7 @@ params:
 write(append = F,x = "R Loaded",file = "log.txt")
 write(append = T,sep = "\n" ,x = "Loading Python",file = "log.txt")
 library("reticulate")
-use_python("/home/hs/miniconda3/bin/python", required = T)
+use_python("path/to/your/python/bin", required = T)
 data_path <- params$data_path
 target_var <- params$target_var
 chosen_vars <- params$chosen_vars
@@ -162,8 +162,6 @@ with open('log.txt', 'a') as f:
 
 # grid searching 
 
-
-
 mydir = os.path.join("../analysis_history",datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 os.makedirs(mydir)
 os.makedirs(mydir+"/data")
@@ -177,10 +175,9 @@ os.makedirs(mydir+"/images/mlp")
 os.makedirs(mydir+"/images/lr")
 os.makedirs(mydir+"/images/svc")
 index = 0
-
- 
 path = 'log.txt'
 best_models = {}
+
 for model_param in models_params:
     with open('log.txt', 'a') as f:
         f.write('Grid search with' + str(model_param["model"]))
@@ -200,7 +197,6 @@ for model_param in models_params:
       f.write('Grid search finished with best score of : ' + str(fitted.best_score_))
     best_models[index] = {"score" : grid.best_score_ , "params" : grid.best_params_}
 f.close()
-
 
 ```
 
@@ -352,7 +348,3 @@ file.create(con)
 writeLines(con = con,text = py$mydir)
 write(append = T,sep = "\n" ,x = "Process complete, you can go go to IDE to visualize the results",file = "log.txt")
 ```
-
-
-
-
