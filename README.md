@@ -16,7 +16,7 @@ parcequ'ils sont généralement uniques et n'ont pas d'effet sur la variance de 
 
 Pour la démenstration on va choisir le training set de Kaggle/Titanic :
 
-![hello](./Presentation/GIF1.gif)
+![](./media/GIF1.gif)
 
 Aprés avoir selectionner le fichier csv et les variables (input/output), vous n'avez qu'attendre les résultats.
 
@@ -26,15 +26,15 @@ Aprés avoir selectionner le fichier csv et les variables (input/output), vous n
 
 Le process peut prendre 25+ min
 
-![hello](./Presentation/GIF2.gif)
+![](./media/GIF2.gif)
 
 La derniere phase, consiste a la visualisation des résultats fournis par le dernier GridSearch lancé.
 Chaque graphe represente la distribution des moyennes contre les equart-type des scores (précision) des 5 folds (cross-validation) et chaque boutton permet de distinguer entre les different choix de paramètres
 
-![hello](./Presentation/GIF3.gif)
+![](./media/GIF3.gif)
 
 
 **Remarque** Le programme utilise le RandomizedSearchingCV pour choisir les estimateurs (candidates estimators) de facon aléatoire a chaque itération.  RandomizedSearchCV est très utile lorsque nous avons de nombreux paramètres à essayer et que le temps de formation est très long.
 
 ## Technologies utilisé
-![](Presentation/tech.png)
+![](media/tech.png)
