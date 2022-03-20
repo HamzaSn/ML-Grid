@@ -2,27 +2,18 @@ package App.Controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class IDEController {
 
-    public Button imputerSVC;
-    public Button CSVC;
-    public Button gammaSVC;
-    public Button kernelSVC;
-    public Button coef0SVC;
-    public Button catEncoderSVC;
-    public Button numScalerSVC;
-    public Button shrinkingSVC;
-    public Button probabilitySVC;
+
+
     @FXML
     private ImageView imagePlaceHolder;
     @FXML
@@ -79,10 +70,58 @@ public class IDEController {
     private Button numScalerNN;
     @FXML
     private Button imputerNN;
+    @FXML
+    private Button imputerSVC;
+    @FXML
+    private Button CSVC;
+    @FXML
+    private Button gammaSVC;
+    @FXML
+    private Button kernelSVC;
+    @FXML
+    private Button coef0SVC;
+    @FXML
+    private Button catEncoderSVC;
+    @FXML
+    private Button numScalerSVC;
+    @FXML
+    private Button shrinkingSVC;
+    @FXML
+    private Button probabilitySVC;
+    @FXML
+    private Button bestParamsKNN;
+    @FXML
+    private Button bestParamsLR;
+    @FXML
+    private Button bestParamsRF;
+    @FXML
+    private Button bestParamsMLP;
+    @FXML
+    private Button bestParamsSVC;
+    @FXML
+    private Button bestParamsALL;
+    @FXML
+    private TextArea bestParamsPlaceHolder;
 
+
+    private String getBestParams(String model) throws IOException {
+
+        File file = new File(last_instance_path+"/models_params/"+ model +"_best_params.txt");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        StringBuilder message = new StringBuilder();
+        String curr_line = br.readLine() ;
+        while (curr_line != null){
+            curr_line = curr_line + "\n" ;
+            message.append(curr_line);
+            curr_line = br.readLine();
+        }
+        return  message.toString();
+    }
     private Image getResultImage(String model, String name)  {
 
         File file = new File(last_instance_path+"/images/"+ model +"/"+name+".png");
+        bestParamsPlaceHolder.setVisible(false);
+        imagePlaceHolder.setVisible(true);
         return new Image(file.toURI().toString());
     }
 
@@ -91,18 +130,21 @@ public class IDEController {
     private ArrayList<Button> LRButtons;
     private ArrayList<Button> NNButtons;
     private ArrayList<Button> SVCButtons;
-
+    private ArrayList<Button> ALLButtons;
     private ArrayList<ArrayList<Button>> options;
     private String last_instance_path;
     @FXML
     private void initialize() throws IOException {
-        File last_instance_file = new File("last_instance.txt");
+        File last_instance_file = new File("./last_instance.txt");
         BufferedReader br = new BufferedReader(new FileReader(last_instance_file));
         last_instance_path = br.readLine().replace("../","");
+        ALLButtons = new ArrayList<>();
+        ALLButtons.add(bestParamsALL);
         SVCButtons = new ArrayList<>(Arrays.asList(
+                bestParamsSVC,
                 imputerSVC,
-                catEncoderNN,
-                numScalerNN,
+                numScalerSVC,
+                catEncoderSVC,
                 gammaSVC,
                 coef0SVC,
                 kernelSVC,
@@ -111,6 +153,7 @@ public class IDEController {
                 probabilitySVC
         ));
         KNNButtons = new ArrayList<>(Arrays.asList(
+                bestParamsKNN,
                 nNeighborsKNN,
                 leafSizeKNN,
                 catEncoderKNN,
@@ -120,6 +163,7 @@ public class IDEController {
                 weightKNN
         ));
         RFButtons = new ArrayList<>(Arrays.asList(
+                bestParamsRF,
                 catEncoderRF,
                 numScalerRF,
                 imputerRF,
@@ -129,6 +173,7 @@ public class IDEController {
                 nEstimatorsRF
         ));
         LRButtons = new ArrayList<>(Arrays.asList(
+                bestParamsLR,
                 catEncoderLR,
                 numScalerLR,
                 imputerLR,
@@ -137,6 +182,7 @@ public class IDEController {
                 multiclassLR
         ));
         NNButtons = new ArrayList<>(Arrays.asList(
+                bestParamsMLP,
                 catEncoderNN,
                 numScalerNN,
                 imputerNN,
@@ -147,6 +193,7 @@ public class IDEController {
 
         ));
         options = new ArrayList<>(Arrays.asList(
+                ALLButtons,
                 SVCButtons,
                 KNNButtons,
                 RFButtons,
@@ -166,6 +213,7 @@ public class IDEController {
         }
 
         KNNButtons.forEach((k) -> k.setVisible(true));
+
     }
     @FXML
     private void RF(){
@@ -227,6 +275,7 @@ public class IDEController {
         File file = new File(last_instance_path+"/images/allModels.png");
         Image image = new Image(file.toURI().toString());
         imagePlaceHolder.setImage(image);
+        bestParamsALL.setVisible(true);
     }
     
 
@@ -235,6 +284,7 @@ public class IDEController {
     private void showNKNN(){
         imagePlaceHolder.setImage(
                 getResultImage("knn","param_model__n_neighbors"));
+
     }
 
 
@@ -398,45 +448,96 @@ public class IDEController {
     }
 
 
-    public void showImputerSVC() {
+    @FXML
+    private void showImputerSVC() {
         imagePlaceHolder.setImage(
                 getResultImage("svc","param_preprocessor__num__imputer"));
     }
 
-    public void showCatEncoderSVC( ) {
+    @FXML
+    private void showCatEncoderSVC() {
     }
 
-    public void showNumScalerSVC( ) {
+    @FXML
+    private void showNumScalerSVC() {
         imagePlaceHolder.setImage(
                 getResultImage("svc","param_preprocessor__num__scaler"));
     }
-    public void showCSVC( ) {
+    @FXML
+    private void showCSVC() {
         imagePlaceHolder.setImage(
                 getResultImage("svc","param_model__C"));
     }
 
-    public void showGammaSVC( ) {
+    @FXML
+    private void showGammaSVC() {
         imagePlaceHolder.setImage(
                 getResultImage("svc","param_model__gamma"));
     }
 
-    public void showKernelSVC( ) {
+    @FXML
+    private void showKernelSVC() {
         imagePlaceHolder.setImage(
                 getResultImage("svc","param_model__kernel"));
     }
 
-    public void showCoef0SVC( ) {
+    @FXML
+    private void showCoef0SVC() {
         imagePlaceHolder.setImage(
                 getResultImage("svc","param_model__coef0"));
     }
 
-    public void showShrinkingSVC( ) {
+    @FXML
+    private void showShrinkingSVC() {
         imagePlaceHolder.setImage(
                 getResultImage("svc","param_model__shrinking"));
     }
 
-    public void showProbabilitySVC( ) {
+    @FXML
+    private void showProbabilitySVC() {
         imagePlaceHolder.setImage(
                 getResultImage("svc","param_model__probability"));
+    }
+
+    @FXML
+    private void showBestParamsKNN() throws IOException {
+        imagePlaceHolder.setVisible(false);
+        bestParamsPlaceHolder.setVisible(true);
+        bestParamsPlaceHolder.setText(getBestParams("knn"));
+    }
+
+    @FXML
+    private void showBestParamsLR() throws IOException {
+        imagePlaceHolder.setVisible(false);
+        bestParamsPlaceHolder.setVisible(true);
+        bestParamsPlaceHolder.setText(getBestParams("lr"));
+    }
+
+    @FXML
+    private void showBestParamsRF() throws IOException {
+        imagePlaceHolder.setVisible(false);
+        bestParamsPlaceHolder.setVisible(true);
+        bestParamsPlaceHolder.setText(getBestParams("rf"));
+    }
+
+    @FXML
+    private void showBestParamsMLP() throws IOException {
+        imagePlaceHolder.setVisible(false);
+        bestParamsPlaceHolder.setVisible(true);
+        bestParamsPlaceHolder.setText(getBestParams("mlp"));
+    }
+
+    @FXML
+    private void showBestParamsSVC() throws IOException {
+        imagePlaceHolder.setVisible(false);
+        bestParamsPlaceHolder.setVisible(true);
+        bestParamsPlaceHolder.setText(getBestParams("svc"));
+    }
+
+    @FXML
+    private void showBestParamsALL() throws IOException {
+        imagePlaceHolder.setVisible(false);
+        bestParamsPlaceHolder.setVisible(true);
+        bestParamsPlaceHolder.setText(getBestParams("all"));
     }
 }

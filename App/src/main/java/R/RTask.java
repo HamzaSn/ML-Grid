@@ -2,11 +2,7 @@ package R;
 
 import App.Models.DataInfo;
 import javafx.concurrent.Task;
-import javafx.scene.chart.PieChart;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 public class RTask extends Task {
 

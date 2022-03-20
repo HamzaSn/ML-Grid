@@ -1,23 +1,25 @@
 ---
 params:
-  data_path: ""
-  target_var: ""
-  chosen_vars: ""
-  output_path: ""
-  
+    data_path: ""
+    target_var: ""
+    chosen_vars: ""
+    output_path: ""
+
 ---
 
 ```{r include=FALSE}
 write(append = F,x = "R Loaded",file = "log.txt")
 write(append = T,sep = "\n" ,x = "Loading Python",file = "log.txt")
 library("reticulate")
-use_python("path/to/your/python/bin", required = T)
+use_python("/path/to/your/python/bin/folder", required = T)
 data_path <- params$data_path
 target_var <- params$target_var
 chosen_vars <- params$chosen_vars
 output_path <- params$output_path
 
 ```
+
+
 ```{python include=FALSE}
 with open('log.txt', 'a') as f:
     f.write('Loading python libraries...')
@@ -37,7 +39,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
-
+from sklearn.experimental import enable_halving_search_cv
+from sklearn.model_selection import HalvingRandomSearchCV
 from sklearn.model_selection import RandomizedSearchCV
 
 # Data import
@@ -47,7 +50,7 @@ df = pd.read_csv(r['data_path'])
 target_var = r['target_var']
 X = df.drop(target_var,axis=1)
 if r['chosen_vars'] != "":
-  X = X.loc[:,r['chosen_vars']]
+    X = X.loc[:,r['chosen_vars']]
 y = df[target_var]
 
 # Splitting features into categories and numerics
@@ -94,7 +97,7 @@ ohe = OneHotEncoder(handle_unknown="ignore")
 encoders = [ohe,ordinalEncoder]
 
 
-# common params 
+# common params
 imputers = [SimpleImputer(strategy="mean"),
             SimpleImputer(strategy="most_frequent"),
             KNNImputer(n_neighbors = 5),
@@ -111,16 +114,13 @@ common_params["preprocessor__cat__encoder"] = encoders
 knn = KNeighborsClassifier()
 rf = RandomForestClassifier()
 logreg = LogisticRegression()
-mlp = MLPClassifier(max_iter=200,n_iter_no_change=10)
+mlp = MLPClassifier(max_iter=100,n_iter_no_change=10)
 svc = SVC()
-
-
 
 svc_params = {}
 svc_params["model"] = [svc]
 svc_params["model__C"] = range(1,50,10)
-# svc_params["model__kernel"] = ['linear', 'poly', 'rbf', 'sigmoid', 'precomputed']
-svc_params["model__kernel"] = ['rbf']
+svc_params["model__kernel"] = ['linear', 'poly', 'rbf', 'sigmoid', 'precomputed']
 svc_params['model__gamma'] = ['scale', 'auto']
 svc_params['model__coef0'] = [1]
 svc_params['model__shrinking'] = [True,False]
@@ -145,8 +145,8 @@ logreg_params = {}
 logreg_params["model"] = [logreg]
 logreg_params["model__C"] = [*range(1,50,5)]
 logreg_params["model__multi_class"] = ['ovr', 'multinomial']
-# logreg_params["model__solver"] = ['newton-cg', 'lbfgs', 'sag', 'saga']
-logreg_params["model__solver"] = ['saga']
+logreg_params["model__solver"] = ['newton-cg', 'lbfgs', 'sag', 'saga']
+
 
 mlp_params = {}
 mlp_params["model"] = [mlp]
@@ -160,13 +160,12 @@ models_params = [knn_params,mlp_params,rf_params,svc_params,logreg_params]
 with open('log.txt', 'a') as f:
     f.write('grid parameters created')
 
-# grid searching 
+# grid searching
 
 mydir = os.path.join("../analysis_history",datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 os.makedirs(mydir)
 os.makedirs(mydir+"/data")
 os.makedirs(mydir+"/models_params")
-open(mydir + "/models_params/model_params.txt", "x")
 os.makedirs(mydir+"/models")
 os.makedirs(mydir+"/images")
 os.makedirs(mydir+"/images/knn")
@@ -175,15 +174,15 @@ os.makedirs(mydir+"/images/mlp")
 os.makedirs(mydir+"/images/lr")
 os.makedirs(mydir+"/images/svc")
 index = 0
+
 path = 'log.txt'
 best_models = {}
-
 for model_param in models_params:
     with open('log.txt', 'a') as f:
         f.write('Grid search with' + str(model_param["model"]))
     current_param = model_param.copy()
     current_param.update(common_params)
-    grid = RandomizedSearchCV(pipe,current_param,cv=5,n_jobs=-1,n_iter = 50)
+    grid = RandomizedSearchCV(pipe,current_param,cv=5,n_iter = 20,n_jobs=-1)
     fitted = grid.fit(X,y)
     with open('log.txt', 'a') as f:
         f.write('Grid fitted')
@@ -191,14 +190,241 @@ for model_param in models_params:
     model_name = str(model_param['model'])
     model_name = model_name[1:model_name.find("(")]
     filename = mydir+ "/data/" + model_name + ".csv"
-    index = index + 1
-    result.to_csv(filename)  
+    result.to_csv(filename)
     with open('log.txt', 'a') as f:
-      f.write('Grid search finished with best score of : ' + str(fitted.best_score_))
+        f.write('Grid search finished with best score of : ' + str(fitted.best_score_))
     best_models[index] = {"score" : grid.best_score_ , "params" : grid.best_params_}
+    index = index + 1
 f.close()
+```
+
+
+
+```{r include=FALSE}
+old = py$best_models[['0']][['params']][['model']]
+to = gregexpr("\\(",old)[[1]][1]
+model_name =  substr(old,0,to-1)
+
+score =  py$best_models[['0']][['score']]
+
+old = py$best_models[['0']][['params']][['preprocessor__num__imputer']]
+to = gregexpr("\\(",old)[[1]][1]
+imputer =  substr(old,0,to-1)
+
+old = py$best_models[['0']][['params']][['preprocessor__cat__encoder']]
+to = gregexpr("\\(",old)[[1]][1]
+encoder =  substr(old,0,to-1)
+
+old = py$best_models[['0']][['params']][['preprocessor__num__scaler']]
+to = gregexpr("\\(",old)[[1]][1]
+scaler =  substr(old,0,to-1)
+
+n_neighbors = py$best_models[['0']][['params']][['model__n_neighbors']]
+
+leaf_size = py$best_models[['0']][['params']][['model__leaf_size']]
+
+weights = py$best_models[['0']][['params']][['model__weights']]
+
+algorithm = py$best_models[['0']][['params']][['model__algorithm']]
+
+best_param1 = paste(
+  "Model name : " , model_name, "\n",
+  "Best Score : " , score,"\n",
+  "Imputer used : ", imputer,"\n",
+  "Numeric scaler used : ", scaler,"\n",
+  "Categories encoder used : ", encoder,"\n",
+  "Number of neighbors (n_neighbors) : " , n_neighbors,"\n",
+  "Leaf size (leaf_size) : ", leaf_size,"\n",
+  "Weights (weights) : " , weights,"\n",
+  "Algorithm (algorithm) : ", algorithm,"\n"
+)
+
+write(append = F,sep = "\n" ,x = best_param1,
+      file = paste0(py$mydir,"/models_params/knn_best_params.txt"))
+
+old = py$best_models[['1']][['params']][['model']]
+to = gregexpr("\\(",old)[[1]][1]
+model_name =  substr(old,0,to-1)
+
+score =  py$best_models[['1']][['score']]
+
+old = py$best_models[['1']][['params']][['preprocessor__num__imputer']]
+to = gregexpr("\\(",old)[[1]][1]
+imputer =  substr(old,0,to-1)
+
+old = py$best_models[['1']][['params']][['preprocessor__cat__encoder']]
+to = gregexpr("\\(",old)[[1]][1]
+encoder =  substr(old,0,to-1)
+
+old = py$best_models[['1']][['params']][['preprocessor__num__scaler']]
+to = gregexpr("\\(",old)[[1]][1]
+scaler =  substr(old,0,to-1)
+
+hidden_layer_sizes = unlist(py$best_models[['1']][['params']][['model__hidden_layer_sizes']]) 
+hidden_layer_sizes = paste0("(",hidden_layer_sizes[1],",",hidden_layer_sizes[2],")")
+
+activation = py$best_models[['1']][['params']][['model__activation']]
+
+solver = py$best_models[['1']][['params']][['model__solver']]
+
+learning_rate = py$best_models[['1']][['params']][['model__learning_rate']]
+
+best_param2 = paste(
+  "Model name : " , model_name, "\n",
+  "Best Score : " , score,"\n",
+  "Imputer used : ", imputer,"\n",
+  "Numeric scaler used : ", scaler,"\n",
+  "Categories encoder used : ", encoder,"\n",
+  "Hidden layer sizes (hidden_layer_sizes) : " , hidden_layer_sizes,"\n",
+  "Activation (activation) : ", activation,"\n",
+  "Solver (solver) : " , solver,"\n",
+  "Learning rate (learning_rate) : ", learning_rate,"\n"
+)
+
+write(append = F,sep = "\n" ,x = best_param2,
+      file = paste0(py$mydir,"/models_params/mlp_best_params.txt"))
+
+old = py$best_models[['2']][['params']][['model']]
+to = gregexpr("\\(",old)[[1]][1]
+model_name =  substr(old,0,to-1)
+
+score =  py$best_models[['2']][['score']]
+
+old = py$best_models[['2']][['params']][['preprocessor__num__imputer']]
+to = gregexpr("\\(",old)[[1]][1]
+imputer =  substr(old,0,to-1)
+
+old = py$best_models[['2']][['params']][['preprocessor__cat__encoder']]
+to = gregexpr("\\(",old)[[1]][1]
+encoder =  substr(old,0,to-1)
+
+old = py$best_models[['2']][['params']][['preprocessor__num__scaler']]
+to = gregexpr("\\(",old)[[1]][1]
+scaler =  substr(old,0,to-1)
+
+n_estimators = py$best_models[['2']][['params']][['model__n_estimators']]
+
+criterion = py$best_models[['2']][['params']][['model__criterion']]
+
+max_features = py$best_models[['2']][['params']][['model__max_features']]
+
+bootstrap = py$best_models[['2']][['params']][['model__bootstrap']]
+
+best_param3 = paste(
+  "Model name : " , model_name, "\n",
+  "Best Score : " , score,"\n",
+  "Imputer used : ", imputer,"\n",
+  "Numeric scaler used : ", scaler,"\n",
+  "Categories encoder used : ", encoder,"\n",
+  "Number of estimators (n_estimators) : " , n_estimators,"\n",
+  "Criterion (criterion): ", criterion,"\n",
+  "Max features (max_features) : " , max_features,"\n",
+  "Bootstrap (bootstrap) : ", bootstrap,"\n"
+
+)
+
+write(append = F,sep = "\n" ,x = best_param3,
+      file = paste0(py$mydir,"/models_params/rf_best_params.txt"))
+
+
+old = py$best_models[['3']][['params']][['model']]
+to = gregexpr("\\(",old)[[1]][1]
+model_name =  substr(old,0,to-1)
+
+score =  py$best_models[['3']][['score']]
+
+old = py$best_models[['3']][['params']][['preprocessor__num__imputer']]
+to = gregexpr("\\(",old)[[1]][1]
+imputer =  substr(old,0,to-1)
+
+old = py$best_models[['3']][['params']][['preprocessor__cat__encoder']]
+to = gregexpr("\\(",old)[[1]][1]
+encoder =  substr(old,0,to-1)
+
+old = py$best_models[['3']][['params']][['preprocessor__num__scaler']]
+to = gregexpr("\\(",old)[[1]][1]
+scaler =  substr(old,0,to-1)
+
+C = py$best_models[['3']][['params']][['model__C']]
+
+kernel = py$best_models[['3']][['params']][['model__kernel']]
+
+gamma = py$best_models[['3']][['params']][['model__gamma']]
+
+coef0 = py$best_models[['3']][['params']][['model__coef0']]
+
+shrinking = py$best_models[['3']][['params']][['model__shrinking']]
+
+probability = py$best_models[['3']][['params']][['model__probability']]
+
+best_param4 = paste(
+  "Model name : " , model_name, "\n",
+  "Best Score : " , score,"\n",
+  "Imputer used : ", imputer,"\n",
+  "Numeric scaler used : ", scaler,"\n",
+  "Categories encoder used : ", encoder,"\n",
+  "C parameter (C) : " , C,"\n",
+  "Kernel (kernel): ", kernel,"\n",
+  "Gamma (gamma) : " , gamma,"\n",
+  "Coef0 (coef0) : ", coef0,"\n",
+  "Shrinking (bootstrap) : ", shrinking,"\n",
+  "Probablity (probablity) : ", probability,"\n"
+
+)
+
+write(append = F,sep = "\n" ,x = best_param4,
+      file = paste0(py$mydir,"/models_params/svc_best_params.txt"))
+
+old = py$best_models[['4']][['params']][['model']]
+to = gregexpr("\\(",old)[[1]][1]
+model_name =  substr(old,0,to-1)
+
+score =  py$best_models[['4']][['score']]
+
+old = py$best_models[['4']][['params']][['preprocessor__num__imputer']]
+to = gregexpr("\\(",old)[[1]][1]
+imputer =  substr(old,0,to-1)
+
+old = py$best_models[['4']][['params']][['preprocessor__cat__encoder']]
+to = gregexpr("\\(",old)[[1]][1]
+encoder =  substr(old,0,to-1)
+
+old = py$best_models[['4']][['params']][['preprocessor__num__scaler']]
+to = gregexpr("\\(",old)[[1]][1]
+scaler =  substr(old,0,to-1)
+
+C = py$best_models[['4']][['params']][['model__C']]
+
+solver = py$best_models[['4']][['params']][['model__solver']]
+
+multi_class = py$best_models[['4']][['params']][['model__multi_class']]
+
+best_param5 = paste(
+  "Model name : " , model_name, "\n",
+  "Best Score : " , score,"\n",
+  "Imputer used : ", imputer,"\n",
+  "Numeric scaler used : ", scaler,"\n",
+  "Categories encoder used : ", encoder,"\n",
+  "C parameter (C) : " , C,"\n",
+  "Kernel (kernel): ", solver,"\n",
+  "Gamma (gamma) : " , multi_class,"\n"
+)
+
+write(append = F,sep = "\n" ,x = best_param5,
+      file = paste0(py$mydir,"/models_params/lr_best_params.txt"))
+
+scores = NA
+for(i in 0:4){
+  scores[i+1] = as.numeric(py$best_models[[as.character(i)]][['score']])
+}
+
+index_max = which(scores==max(scores))[[1]]
+name_of_msg = paste0("best_param",index_max)
+write(append = F,sep = "\n" ,x = get(name_of_msg),
+      file = paste0(py$mydir,"/models_params/all_best_params.txt"))
 
 ```
+
 
 ```{r include=FALSE}
 # Data cleaning
@@ -212,31 +438,31 @@ for(file in data_files){
   i = i +1
 }
 
-all_data = data.frame(mean_test_score=NA, std_test_score= NA , param_model = NA) 
+all_data = data.frame(mean_test_score=NA, std_test_score= NA , param_model = NA)
 
 for(data_name in data_names){
 
-  data <- get(data_name)  
-  
-for(i in 1:nrow(data)){
-  old = data$param_preprocessor__cat__encoder[i]
-  to = gregexpr("\\(",old)[[1]][1]
-  data$param_preprocessor__cat__encoder[i] = substr(old,0,to-1)
-  
-  
-  old = data$param_preprocessor__num__imputer[i]
-  to = gregexpr("\\(",old)[[1]][1]
-  data$param_preprocessor__num__imputer[i] = substr(old,0,to-1)
-  
-  old = data$param_preprocessor__num__scaler[i]
-  to = gregexpr("\\(",old)[[1]][1]
-  data$param_preprocessor__num__scaler[i] = substr(old,0,to-1)
-  
-  old = data$param_model[i]
-  to = gregexpr("\\(",old)[[1]][1]
-  data$param_model[i] = substr(old,0,to-1)
-  
-}
+  data <- get(data_name)
+
+  for(i in 1:nrow(data)){
+    old = data$param_preprocessor__cat__encoder[i]
+    to = gregexpr("\\(",old)[[1]][1]
+    data$param_preprocessor__cat__encoder[i] = substr(old,0,to-1)
+
+
+    old = data$param_preprocessor__num__imputer[i]
+    to = gregexpr("\\(",old)[[1]][1]
+    data$param_preprocessor__num__imputer[i] = substr(old,0,to-1)
+
+    old = data$param_preprocessor__num__scaler[i]
+    to = gregexpr("\\(",old)[[1]][1]
+    data$param_preprocessor__num__scaler[i] = substr(old,0,to-1)
+
+    old = data$param_model[i]
+    to = gregexpr("\\(",old)[[1]][1]
+    data$param_model[i] = substr(old,0,to-1)
+
+  }
   eval(parse(text = paste(data_name,"<- data")))
   write.csv(data,file = paste0(py$mydir,"/data/",data_name,".csv"))
   all_data = rbind(all_data,data[,c("mean_test_score","std_test_score","param_model")])
@@ -245,11 +471,12 @@ for(i in 1:nrow(data)){
 write.csv(all_data[-1,],file = paste0(py$mydir,"/data/all_data",".csv"))
 ```
 
+
 ```{r include=FALSE}
 # Plotting
 write(append = T,sep = "\n" ,x = "Preparing some great graphics...",file = "log.txt")
 
-LogisticRegression_params = list(name = "lr",data = get("LogisticRegression"), 
+LogisticRegression_params = list(name = "lr",data = get("LogisticRegression"),
                                  list_params=c("param_model__C",
                                                "param_preprocessor__num__scaler",
                                                "param_model__multi_class",
@@ -259,16 +486,16 @@ LogisticRegression_params = list(name = "lr",data = get("LogisticRegression"),
 
 
 
-KNeighborsClassifier_params = list(name = "knn", data = get("KNeighborsClassifier"), 
+KNeighborsClassifier_params = list(name = "knn", data = get("KNeighborsClassifier"),
                                    list_params=  c("param_model__algorithm",
                                                    "param_model__leaf_size",
-                                                   "param_model__n_neighbors",       
+                                                   "param_model__n_neighbors",
                                                    "param_model__weights",
                                                    "param_preprocessor__cat__encoder",
                                                    "param_preprocessor__num__imputer",
                                                    "param_preprocessor__num__scaler" ))
 
-RandomForest_params = list(name = "rf",data = get("RandomForestClassifier"), 
+RandomForest_params = list(name = "rf",data = get("RandomForestClassifier"),
                            list_params= c("param_model__bootstrap",
                                           "param_preprocessor__num__scaler",
                                           "param_model__criterion",
@@ -278,27 +505,30 @@ RandomForest_params = list(name = "rf",data = get("RandomForestClassifier"),
                                           "param_preprocessor__num__imputer"))
 
 SVC_params = list(name="svc",data = get("SVC"), list_params= c("param_model__C",
-                                                                   "param_preprocessor__num__scaler",
-                                                                   "param_model__kernel",
-                                                                   "param_model__gamma",
-                                                                   "param_model__coef0",
-                                                                   "param_model__shrinking", 
-                                                                   "param_model__probability", 
-                                                                   "param_preprocessor__cat__encoder",
-                                                                   "param_preprocessor__num__imputer" ))
+                                                               "param_preprocessor__num__scaler",
+                                                               "param_model__kernel",
+                                                               "param_model__gamma",
+                                                               "param_model__coef0",
+                                                               "param_model__shrinking",
+                                                               "param_model__probability",
+                                                               "param_preprocessor__cat__encoder",
+                                                               "param_preprocessor__num__imputer" ))
 
 MLPClassifier_params = list(name="mlp",data = get("MLPClassifier"), list_params= c("param_model__activation",
-                                                                   "param_preprocessor__num__scaler",
-                                                                   "param_model__hidden_layer_sizes",
-                                                                   "param_model__learning_rate",
-                                                                   "param_model__solver",           
-                                                                   "param_preprocessor__cat__encoder",
-                                                                   "param_preprocessor__num__imputer" ))
+                                                                                   "param_preprocessor__num__scaler",
+                                                                                   "param_model__hidden_layer_sizes",
+                                                                                   "param_model__learning_rate",
+                                                                                   "param_model__solver",
+                                                                                   "param_preprocessor__cat__encoder",
+                                                                                   "param_preprocessor__num__imputer" ))
 
-
-makePlot <- function(data,x="mean_test_score",y="std_test_score",color){
-  a= gregexpr("\\(",data$param_model[1])[[1]][1]
-  model_name = substr(data$param_model[1],10, a - 1)
+makePlot <- function(data,x="mean_test_score",y="std_test_score",color,plot_name=""){
+  if(plot_name != ""){
+    model_name = plot_name
+  } else {
+    model_name = data$param_model[1]
+  }
+  
   x_name = gsub("_"," ",x)
   y_name = gsub("_"," ",y)
   color_name = gsub("param_model__","",color)
@@ -316,9 +546,10 @@ makePlot <- function(data,x="mean_test_score",y="std_test_score",color){
   list(plot = p , name = color)
 }
 
+
 all_params = list(KNeighborsClassifier_params,
-               LogisticRegression_params,
-               RandomForest_params,MLPClassifier_params,SVC_params)
+                  LogisticRegression_params,
+                  RandomForest_params,MLPClassifier_params,SVC_params)
 
 i = 0
 for(p in all_params){
@@ -335,7 +566,10 @@ for(p in all_params){
   }
 }
 
-makePlot(all_data,color = "param_model")
+
+
+all_data= na.omit(all_data)
+makePlot(all_data,color = "param_model",plot_name = "All models")
 
 ggsave(units = "px",width = 2400,height = 1700,
        path =  paste0(py$mydir,"/images/"),filename="allModels.png")
@@ -348,3 +582,7 @@ file.create(con)
 writeLines(con = con,text = py$mydir)
 write(append = T,sep = "\n" ,x = "Process complete, you can go go to IDE to visualize the results",file = "log.txt")
 ```
+
+
+
+
