@@ -1,0 +1,10 @@
+Model name :  MLPClassifier 
+ Best Score :  0.973333333333333 
+ Imputer used :  KNNImputer 
+ Numeric scaler used :  StandardScaler 
+ Categories encoder used :  OneHotEncoder 
+ Hidden layer sizes (hidden_layer_sizes) :  560 
+ Activation (activation) :  identity 
+ Solver (solver) :  adam 
+ Learning rate (learning_rate) :  invscaling
+

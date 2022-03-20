@@ -30,7 +30,7 @@ public class GridSearchController {
     @FXML
     private void initialize()  throws IOException{
 
-        service.start();
+        
         progressIndicator.visibleProperty().bind(service.runningProperty());
         info.visibleProperty().bind(service.runningProperty());
 
@@ -71,7 +71,9 @@ public class GridSearchController {
                 }
             }
         });
+        service.start();
         thread.start();
+        
     }
 
     @FXML
@@ -83,7 +85,9 @@ public class GridSearchController {
     private void goIDE() throws IOException {
         Stage stage = (Stage) goIDE.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("IDE-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1200 , 700);
+        Scene scene = new Scene(fxmlLoader.load(), 1200 , 800);
+        stage.setMaximized(true);
+        stage.setResizable(true);
         stage.setTitle("IDE");
         stage.setScene(scene);
         stage.show();
