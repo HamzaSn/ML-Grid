@@ -3,20 +3,18 @@ params:
     data_path: ""
     target_var: ""
     chosen_vars: ""
-    output_path: ""
-
+    session_name: ""
 ---
 
 ```{r include=FALSE}
 write(append = F,x = "R Loaded",file = "log.txt")
 write(append = T,sep = "\n" ,x = "Loading Python",file = "log.txt")
 library("reticulate")
-use_python("/path/to/your/python/bin/folder", required = T)
+use_python("/home/hs/miniconda3/bin/python", required = T)
 data_path <- params$data_path
 target_var <- params$target_var
 chosen_vars <- params$chosen_vars
-output_path <- params$output_path
-
+session_name <- params$session_name
 ```
 
 
@@ -122,7 +120,7 @@ svc_params["model"] = [svc]
 svc_params["model__C"] = range(1,50,10)
 svc_params["model__kernel"] = ['linear', 'poly', 'rbf', 'sigmoid', 'precomputed']
 svc_params['model__gamma'] = ['scale', 'auto']
-svc_params['model__coef0'] = [1]
+svc_params['model__coef0'] = range(1,10,1)
 svc_params['model__shrinking'] = [True,False]
 svc_params['model__probability'] = [True,False]
 
@@ -161,8 +159,11 @@ with open('log.txt', 'a') as f:
     f.write('grid parameters created')
 
 # grid searching
+session_name = r['session_name']
+if session_name == "":
+  session_name = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
-mydir = os.path.join("../analysis_history",datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+mydir = os.path.join("../analysis_history",session_name)
 os.makedirs(mydir)
 os.makedirs(mydir+"/data")
 os.makedirs(mydir+"/models_params")
@@ -182,7 +183,7 @@ for model_param in models_params:
         f.write('Grid search with' + str(model_param["model"]))
     current_param = model_param.copy()
     current_param.update(common_params)
-    grid = RandomizedSearchCV(pipe,current_param,cv=5,n_iter = 20,n_jobs=-1)
+    grid = RandomizedSearchCV(pipe,current_param,cv=5,n_iter = 50,n_jobs=-1)
     fitted = grid.fit(X,y)
     with open('log.txt', 'a') as f:
         f.write('Grid fitted')
@@ -579,7 +580,7 @@ if(file.exists(con)){
   file.remove(con)
 }
 file.create(con)
-writeLines(con = con,text = py$mydir)
+writeLines(con = con,text = substr(py$mydir,2,nchar(py$mydir)))
 write(append = T,sep = "\n" ,x = "Process complete, you can go go to IDE to visualize the results",file = "log.txt")
 ```
 

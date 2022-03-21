@@ -7,7 +7,7 @@ public class RCaller {
     com.github.rcaller.rstuff.RCaller caller = com.github.rcaller.rstuff.RCaller.create();
     RCode code = RCode.create();
 
-    public void runR(String data_path, String target_var, Object[] chosen_vars) {
+    public void runR(String data_path, String target_var, Object[] chosen_vars,String session_name) {
         StringBuilder x = new StringBuilder("c(");
         for (Object elem : chosen_vars) {
             x.append("\"").append(elem).append("\"").append(",");
@@ -18,6 +18,7 @@ public class RCaller {
         code.addRCode("list_params <- list(" +
                 "data_path = \"" + data_path + "\"," +
                 "target_var = \"" + target_var + "\"," +
+                "session_name = \"" + session_name + "\","+
                 "chosen_vars = " + x +
                 ")");
 

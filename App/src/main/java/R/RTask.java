@@ -16,7 +16,7 @@ public class RTask extends Task {
 
         try{
             R.runR((String) DataInfo.info.get("dataPath"), (String) DataInfo.info.get("targetVar"),
-                    (Object[]) DataInfo.info.get("chosen_vars"));
+                    (Object[]) DataInfo.info.get("chosen_vars"),(String) DataInfo.info.get("session_name"));
             success = true;
 
         } catch (Exception e){
