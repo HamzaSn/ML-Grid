@@ -10,7 +10,7 @@ params:
 write(append = F,x = "R Loaded",file = "log.txt")
 write(append = T,sep = "\n" ,x = "Loading Python",file = "log.txt")
 library("reticulate")
-use_python("/home/hs/miniconda3/bin/python", required = T)
+use_python("path/to your/bin/python", required = T)
 data_path <- params$data_path
 target_var <- params$target_var
 chosen_vars <- params$chosen_vars
