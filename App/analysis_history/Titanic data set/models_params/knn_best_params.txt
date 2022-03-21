@@ -1,0 +1,10 @@
+Model name :  KNeighborsClassifier 
+ Best Score :  0.817048521750047 
+ Imputer used :  KNNImputer 
+ Numeric scaler used :  MinMaxScaler 
+ Categories encoder used :  OneHotEncoder 
+ Number of neighbors (n_neighbors) :  7 
+ Leaf size (leaf_size) :  196 
+ Weights (weights) :  distance 
+ Algorithm (algorithm) :  kd_tree 
+

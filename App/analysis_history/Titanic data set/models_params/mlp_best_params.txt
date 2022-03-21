@@ -1,0 +1,10 @@
+Model name :  MLPClassifier 
+ Best Score :  0.833864791915134 
+ Imputer used :  SimpleImputer 
+ Numeric scaler used :  MinMaxScaler 
+ Categories encoder used :  OneHotEncoder 
+ Hidden layer sizes (hidden_layer_sizes) :  (200,NA) 
+ Activation (activation) :  relu 
+ Solver (solver) :  lbfgs 
+ Learning rate (learning_rate) :  invscaling 
+

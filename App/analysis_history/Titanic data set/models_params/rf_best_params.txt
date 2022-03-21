@@ -1,0 +1,10 @@
+Model name :  RandomForestClassifier 
+ Best Score :  0.826043562864855 
+ Imputer used :  KNNImputer 
+ Numeric scaler used :  MinMaxScaler 
+ Categories encoder used :  OneHotEncoder 
+ Number of estimators (n_estimators) :  91 
+ Criterion (criterion):  gini 
+ Max features (max_features) :  sqrt 
+ Bootstrap (bootstrap) :  TRUE 
+

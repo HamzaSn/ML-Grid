@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Light.Distant?>
 <?import javafx.scene.effect.Lighting?>
 <?import javafx.scene.effect.Shadow?>
@@ -18,46 +20,21 @@
   <children>
     <AnchorPane focusTraversable="true" maxHeight="-1.0" maxWidth="-1.0" prefHeight="398.0" prefWidth="685.0" VBox.vgrow="ALWAYS">
       <children>
-            <ImageView fx:id="newAnalysis" fitHeight="819.0" fitWidth="1286.0" layoutX="-420.0" layoutY="-47.0" onMouseClicked="#newAnalysis" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="image" fitHeight="1129.0" fitWidth="2017.0" layoutX="-420.0" layoutY="-47.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../color2.jpg" />
                </image>
             </ImageView>
-            <Label fx:id="newButton" alignment="CENTER" layoutX="155.0" layoutY="262.0" onMouseClicked="#newAnalysis" style = "-fx-cursor: hand" prefHeight="34.0" prefWidth="154.0" text="New analysis" textFill="#1b1302">
+            <Label fx:id="newButton" alignment="CENTER" layoutX="155.0" layoutY="262.0" onMouseClicked="#newAnalysis" prefHeight="34.0" prefWidth="154.0" style="-fx-cursor: hand" text="New analysis" textFill="#05021a">
                <font>
                   <Font name="System Bold" size="16.0" />
                </font></Label>
-            <Label fx:id="analysisHistory" alignment="CENTER" layoutX="152.0" layoutY="317.0" prefHeight="34.0" prefWidth="154.0" text="Analysis history">
+            <Label alignment="CENTER" layoutX="236.0" layoutY="85.0" prefHeight="93.0" prefWidth="368.0" text="Get started" textFill="#200aa1">
                <font>
-                  <Font name="System Bold" size="16.0" />
-               </font></Label>
-            <Label alignment="CENTER" layoutX="236.0" layoutY="85.0" prefHeight="93.0" prefWidth="368.0" text="Get started">
-               <font>
-                  <Font size="36.0" />
+                  <Font name="System Bold Italic" size="38.0" />
                </font>
-               <textFill>
-                  <LinearGradient endY="0.6857142857142857" startX="0.7476190476190476">
-                     <stops>
-                        <Stop>
-                           <color>
-                              <Color red="1.0" green="1.0" blue="1.0" />
-                           </color>
-                        </Stop>
-                        <Stop offset="0.007407407407407408">
-                           <color>
-                              <Color red="1.0" green="1.0" blue="1.0" />
-                           </color>
-                        </Stop>
-                        <Stop offset="1.0">
-                           <color>
-                              <Color red="0.8947368264198303" green="0.7543818950653076" blue="0.4515107274055481" />
-                           </color>
-                        </Stop>
-                     </stops>
-                  </LinearGradient>
-               </textFill>
             </Label>
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="3.0" layoutX="128.0" layoutY="293.0" strokeType="INSIDE" width="171.0">
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="3.0" layoutX="128.0" layoutY="293.0" strokeType="INSIDE" width="276.0">
                <stroke>
                   <LinearGradient endX="0.4190476190476191" endY="0.42380952380952386" startX="0.5476190476190477" startY="0.40476190476190477">
                      <stops>
@@ -74,7 +51,7 @@
                      </stops>
                   </LinearGradient>
                </stroke></Rectangle>
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="3.0" layoutX="157.0" layoutY="349.0" strokeType="INSIDE" width="196.0">
+            <Rectangle fx:id="historyRect" arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="3.0" layoutX="75.0" layoutY="349.0" strokeType="INSIDE" width="297.0">
                <stroke>
                   <LinearGradient endX="0.6476190476190476" endY="0.42380952380952386" startX="0.5476190476190477" startY="0.40476190476190477">
                      <stops>
@@ -92,6 +69,70 @@
                   </LinearGradient>
                </stroke>
             </Rectangle>
+            <TextField fx:id="infoSessionInput" layoutX="483.0" layoutY="401.0" prefHeight="24.0" prefWidth="196.0" visible="false">
+               <font>
+                  <Font name="System Bold" size="17.0" />
+               </font></TextField>
+            <Label fx:id="infoSessionName" alignment="CENTER" layoutX="86.0" layoutY="396.0" prefHeight="34.0" prefWidth="374.0" text="Choose a name to identify your session" textFill="#1b1302" visible="false">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="goButton" alignment="CENTER" layoutX="679.0" layoutY="400.0" onMouseClicked="#go" prefHeight="34.0" prefWidth="75.0" style="-fx-cursor: hand" text="Go" textFill="#1b1302" visible="false">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="goHistoryButton" alignment="CENTER" layoutX="679.0" layoutY="400.0" onMouseClicked="#goHistory" prefHeight="34.0" prefWidth="75.0" style="-fx-cursor: hand" text="Go" textFill="#1b1302" visible="false">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
+            <Rectangle fx:id="rect" arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="34.0" layoutX="679.0" layoutY="401.0" scaleZ="0.0" strokeType="INSIDE" visible="false" width="75.0">
+               <stroke>
+                  <LinearGradient endX="0.4190476190476191" endY="0.42380952380952386" startX="0.5476190476190477" startY="0.40476190476190477">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color green="0.6846153736114502" blue="0.8899999856948853" />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color red="0.8899999856948853" green="0.6380615234375" blue="0.07119999825954437" />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </LinearGradient>
+               </stroke>
+            </Rectangle>
+            <Label fx:id="warnings" layoutX="70.0" layoutY="470.0" prefHeight="33.0" prefWidth="749.0" text="warnings" visible="false">
+               <font>
+                  <Font name="Liberation Mono" size="26.0" />
+               </font>
+               <textFill>
+                  <LinearGradient endX="0.7761904761904762" endY="0.042857142857142816">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color red="1.0" green="0.018518518656492233" blue="0.018518518656492233" />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </LinearGradient>
+               </textFill>
+            </Label>
+            <ChoiceBox fx:id="choiceBoxHistory" layoutX="152.0" layoutY="311.0" onMouseClicked="#choiceBoxSelected" prefHeight="34.0" prefWidth="234.0" scaleZ="2.0" style="-fx-background-color: transparent;" />
+            <ImageView fx:id="warningImage" fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="462.0" pickOnBounds="true" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../warning.png" />
+               </image>
+            </ImageView>
       </children>
          <effect>
             <Lighting>

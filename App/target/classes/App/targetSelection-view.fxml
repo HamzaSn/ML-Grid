@@ -18,7 +18,7 @@
    <children>
       <AnchorPane prefHeight="600.0" prefWidth="800.0">
          <children>
-            <ImageView fitHeight="918.0" fitWidth="1073.0" layoutX="-271.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="1013.0" fitWidth="1901.0" layoutX="-271.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../color1.jpg" />
                </image>

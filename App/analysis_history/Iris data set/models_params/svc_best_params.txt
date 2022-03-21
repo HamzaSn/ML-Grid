@@ -1,0 +1,12 @@
+Model name :  SVC 
+ Best Score :  0.973333333333333 
+ Imputer used :  SimpleImputer 
+ Numeric scaler used :  MinMaxScaler 
+ Categories encoder used :  OrdinalEncoder 
+ C parameter (C) :  11 
+ Kernel (kernel):  rbf 
+ Gamma (gamma) :  scale 
+ Coef0 (coef0) :  4 
+ Shrinking (bootstrap) :  TRUE 
+ Probablity (probablity) :  FALSE 
+

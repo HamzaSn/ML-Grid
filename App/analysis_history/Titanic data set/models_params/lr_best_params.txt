@@ -1,0 +1,9 @@
+Model name :  LogisticRegression 
+ Best Score :  0.831623877973762 
+ Imputer used :  SimpleImputer 
+ Numeric scaler used :  MinMaxScaler 
+ Categories encoder used :  OneHotEncoder 
+ C parameter (C) :  41 
+ Kernel (kernel):  saga 
+ Gamma (gamma) :  multinomial 
+

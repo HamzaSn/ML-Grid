@@ -83,6 +83,7 @@ public class GridSearchController {
 
     @FXML
     private void goIDE() throws IOException {
+
         Stage stage = (Stage) goIDE.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("IDE-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200 , 800);

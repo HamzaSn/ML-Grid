@@ -1,7 +1,16 @@
 package App.Controllers;
 
+import App.MainApplication;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -9,11 +18,17 @@ import javafx.scene.image.ImageView;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
+
+import App.Models.DataInfo;
+import javafx.stage.Stage;
+
 
 public class IDEController {
 
 
-
+    @FXML
+    private Menu openButtonMenu;
     @FXML
     private ImageView imagePlaceHolder;
     @FXML
@@ -103,10 +118,11 @@ public class IDEController {
     @FXML
     private TextArea bestParamsPlaceHolder;
 
+    private String instance;
 
     private String getBestParams(String model) throws IOException {
 
-        File file = new File(last_instance_path+"/models_params/"+ model +"_best_params.txt");
+        File file = new File(instance +"/models_params/"+ model +"_best_params.txt");
         BufferedReader br = new BufferedReader(new FileReader(file));
         StringBuilder message = new StringBuilder();
         String curr_line = br.readLine() ;
@@ -119,7 +135,7 @@ public class IDEController {
     }
     private Image getResultImage(String model, String name)  {
 
-        File file = new File(last_instance_path+"/images/"+ model +"/"+name+".png");
+        File file = new File(instance +"/images/"+ model +"/"+name+".png");
         bestParamsPlaceHolder.setVisible(false);
         imagePlaceHolder.setVisible(true);
         return new Image(file.toURI().toString());
@@ -132,12 +148,47 @@ public class IDEController {
     private ArrayList<Button> SVCButtons;
     private ArrayList<Button> ALLButtons;
     private ArrayList<ArrayList<Button>> options;
-    private String last_instance_path;
+
+    ArrayList<File> directories;
+
     @FXML
     private void initialize() throws IOException {
-        File last_instance_file = new File("./last_instance.txt");
-        BufferedReader br = new BufferedReader(new FileReader(last_instance_file));
-        last_instance_path = br.readLine().replace("../","");
+        directories = new ArrayList<>(
+                Arrays.asList(
+                        Objects.requireNonNull(new File("./analysis_history").listFiles(File::isDirectory))
+                )
+        );
+
+        for(File dir : directories){
+            MenuItem item = new MenuItem(dir.getName());
+            item.setOnAction((ActionEvent event) -> {
+                DataInfo.info.replace("instance_name","./analysis_history/" + item.getText());
+                Stage stage = (Stage) imagePlaceHolder.getScene().getWindow();
+                FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("IDE-view.fxml"));
+                Scene scene = null;
+                try {
+                    scene = new Scene(fxmlLoader.load(), 1200 , 800);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                stage.setMaximized(true);
+                stage.setResizable(true);
+                stage.setTitle("IDE");
+                stage.setScene(scene);
+                stage.show();
+            });
+            openButtonMenu.getItems().add(item);
+        }
+
+        if(DataInfo.info.get("instance_name").toString().equals("")){
+            File last_instance = new File("./last_instance.txt");
+            BufferedReader br = new BufferedReader(new FileReader(last_instance));
+            instance = br.readLine();
+            System.out.println(instance);
+        } else {
+            instance = DataInfo.info.get("instance_name").toString();
+        }
+
         ALLButtons = new ArrayList<>();
         ALLButtons.add(bestParamsALL);
         SVCButtons = new ArrayList<>(Arrays.asList(
@@ -272,9 +323,11 @@ public class IDEController {
                 break;
             }
         }
-        File file = new File(last_instance_path+"/images/allModels.png");
+        File file = new File(instance +"/images/allModels.png");
         Image image = new Image(file.toURI().toString());
         imagePlaceHolder.setImage(image);
+        imagePlaceHolder.setVisible(true);
+        bestParamsPlaceHolder.setVisible(false);
         bestParamsALL.setVisible(true);
     }
     
@@ -456,6 +509,8 @@ public class IDEController {
 
     @FXML
     private void showCatEncoderSVC() {
+        imagePlaceHolder.setImage(
+                getResultImage("svc","param_preprocessor__cat__encoder"));
     }
 
     @FXML
@@ -539,5 +594,15 @@ public class IDEController {
         imagePlaceHolder.setVisible(false);
         bestParamsPlaceHolder.setVisible(true);
         bestParamsPlaceHolder.setText(getBestParams("all"));
+    }
+
+    public void createNew() throws IOException {
+        Stage stage = (Stage) bestParamsALL.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("home-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        stage.setResizable(false);
+        stage.setTitle("Home");
+        stage.setScene(scene);
+        stage.show();
     }
 }
